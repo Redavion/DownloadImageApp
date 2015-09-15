@@ -17,23 +17,34 @@ public class CharArray implements Comparable<CharArray>,
      */
     // TODO - you fill in here
 
+    private char[] myCharArray;
+
     /**
      * The current size of the array.
      */
     // TODO - you fill in here
+
+    private int sizeOfArray;
 
     /**
      * Default value for elements in the array.
      */
     // TODO - you fill in here
 
+    private char defaultChar;
+
     /**
      * Constructs an array of the given size.
      *
      * @param size Non-negative integer size of the desired array.
      */
+
     public CharArray(int size) {
         // TODO - you fill in here
+
+        myCharArray = new char[size];
+        Arrays.fill(myCharArray, defaultChar);
+        sizeOfArray=size;
     }
 
     /**
@@ -46,6 +57,12 @@ public class CharArray implements Comparable<CharArray>,
     public CharArray(int size,
                      char mDefaultvalue) {
         // TODO - you fill in here
+
+        myCharArray = new char[size];
+        Arrays.fill(myCharArray, mDefaultvalue);
+        sizeOfArray=size;
+        defaultChar=mDefaultvalue;
+
     }
 
     /**
@@ -55,6 +72,11 @@ public class CharArray implements Comparable<CharArray>,
      */
     public CharArray(CharArray s) {
         // TODO - you fill in here
+
+        sizeOfArray=s.sizeOfArray;
+        defaultChar=s.defaultChar;
+        myCharArray = Arrays.copyOf(s.myCharArray, s.sizeOfArray);
+
     }
 
     /**
@@ -62,10 +84,12 @@ public class CharArray implements Comparable<CharArray>,
      * Prototype pattern.
      */
     @Override
-    public Object clone() {
+    public Object clone(){
         // TODO - you fill in here (replace return null with right
         // implementation).
-    	return null;
+
+        CharArray cloneCharArray= new CharArray(this);
+        return cloneCharArray;
     }
 
     /**
@@ -74,7 +98,8 @@ public class CharArray implements Comparable<CharArray>,
     public int size() {
         // TODO - you fill in here (replace return 0 with right
         // implementation).
-    	return 0;
+
+        return sizeOfArray;
     }
 
     /**
@@ -83,7 +108,7 @@ public class CharArray implements Comparable<CharArray>,
     public int capacity() {
         // TODO - you fill in here (replace return 0 with right
         // implementation).
-    	return 0;
+    	return myCharArray.length;
     }
 
     /**
@@ -100,7 +125,21 @@ public class CharArray implements Comparable<CharArray>,
      * @param size Nonnegative requested new size.
      */
     public void resize(int size) {
+
         // TODO - you fill in here
+
+        if (size == sizeOfArray)    //optimization to reduce unnecessary work
+            return;
+        if (size > capacity()) {
+            myCharArray = Arrays.copyOf(myCharArray, size);
+            Arrays.fill(myCharArray, sizeOfArray, size, defaultChar);
+            sizeOfArray = size;
+
+        }  else { //size <= capacity()
+            sizeOfArray=size;
+            Arrays.fill(myCharArray, sizeOfArray, capacity(), defaultChar);
+        }
+
     }
 
     /**
@@ -109,10 +148,11 @@ public class CharArray implements Comparable<CharArray>,
      * @throws ArrayIndexOutOfBoundsException If the requested index is outside the
      * current bounds of the array.
      */
-    public char get(int index) {
+    public char get(int index) throws ArrayIndexOutOfBoundsException {
         // TODO - you fill in here (replace return '\0' with right
         // implementation).
-    	return '\0';
+        rangeCheck(index);
+    	return myCharArray[index];
     }
 
     /**
@@ -122,8 +162,10 @@ public class CharArray implements Comparable<CharArray>,
      * @throws ArrayIndexOutOfBoundsException If the requested index is outside the
      * current bounds of the array.
      */
-    public void set(int index, char value) {
+    public void set(int index, char value) throws ArrayIndexOutOfBoundsException{
         // TODO - you fill in here
+        rangeCheck(index);
+        myCharArray[index]= value;
     }
 
     /**
@@ -140,13 +182,38 @@ public class CharArray implements Comparable<CharArray>,
     public int compareTo(CharArray s) {
         // TODO - you fill in here (replace return 0 with right
         // implementation).
-        return 0;
-    }
 
+     int shortestLength;
+     int returnValueIfUnequalLength; //return value for if words have same characters but unequal in length
+     if (sizeOfArray>=s.sizeOfArray){
+         shortestLength = s.sizeOfArray;
+         returnValueIfUnequalLength=1;
+     } else {
+         shortestLength = sizeOfArray;
+         returnValueIfUnequalLength=-1;
+     }
+        for (int i=0; i<shortestLength;i++){
+          if (s.myCharArray[i] > myCharArray[i]){
+              return -1;
+          }
+          if (myCharArray[i]> s.myCharArray[i]){
+              return 1;
+          }
+        }
+
+        if (sizeOfArray!=s.sizeOfArray){ //if not equal size
+            return returnValueIfUnequalLength;
+        } else {
+            return 0;
+        }
+    }
     /**
      * Throws an exception if the index is out of bound.
      */
-    private void rangeCheck(int index) {
+    private void rangeCheck(int index) throws ArrayIndexOutOfBoundsException{
         // TODO - you fill in here
+        if (index < 0 || index >= this.size()){
+            throw new ArrayIndexOutOfBoundsException("Index out of bounds.");
+        }
     }
 }
