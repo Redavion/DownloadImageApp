@@ -16,7 +16,7 @@ public class CharArray implements Comparable<CharArray>,
      * The underlying array.
      */
     // TODO - you fill in here
-
+    // @@ Please prefix class member variables with 'm'; e.g. mFoo or mBar
     private char[] myCharArray;
 
     /**
@@ -57,7 +57,7 @@ public class CharArray implements Comparable<CharArray>,
     public CharArray(int size,
                      char mDefaultvalue) {
         // TODO - you fill in here
-
+	// @@ Make sure to delegate to the other constructor
         myCharArray = new char[size];
         Arrays.fill(myCharArray, mDefaultvalue);
         sizeOfArray=size;
@@ -136,6 +136,7 @@ public class CharArray implements Comparable<CharArray>,
             sizeOfArray = size;
 
         }  else { //size <= capacity()
+	    // @@ I'm not sure this is correct:
             sizeOfArray=size;
             Arrays.fill(myCharArray, sizeOfArray, capacity(), defaultChar);
         }
