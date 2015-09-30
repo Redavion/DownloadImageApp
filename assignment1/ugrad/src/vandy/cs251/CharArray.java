@@ -186,7 +186,7 @@ public class CharArray implements Comparable<CharArray>,
                 return mCharArray[i] - s.mCharArray[i];
             }
         }
-            return mSizeOfArray - s.mSizeOfArray;
+        return mSizeOfArray - s.mSizeOfArray;
 
     }
 
