@@ -43,6 +43,7 @@ public class Array<T extends Comparable<T>>
             throw new NegativeArraySizeException();
         } else {
             mSizeOfArray = size;
+	    // @@ I would just use Object here. 
             mArray = (T[]) new Comparable[mSizeOfArray];
         }
 
@@ -86,6 +87,7 @@ public class Array<T extends Comparable<T>>
     public Object clone() {
         // TODO - you fill in here (replace null with proper return
         // value).
+	// @@ Please just say 'return …'
         Array<T> cloneArray= new Array<T>(this);
         return cloneArray;
     }
@@ -193,6 +195,8 @@ public class Array<T extends Comparable<T>>
         // TODO - you fill in here (replace 0 with proper return
         // value).
         for (int i = 0; i < Math.min(s.mSizeOfArray, mSizeOfArray); i++) {
+	    // @@ Careful, this doens't work like you expect it to.  "!=" is
+	    // @@ comparing *identity* not *contents*
             if (s.mArray[i] != mArray[i]) {
                 return mArray[i].compareTo(s.mArray[i]);
 
