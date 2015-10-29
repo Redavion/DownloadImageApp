@@ -20,7 +20,7 @@ import org.w3c.dom.Text;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private static final int DOWNLOAD_IMAGE= 1;
     public static EditText editText;
