@@ -10,21 +10,21 @@ import java.util.Iterator;
  * Provides a generic dynamically-(re)sized array abstraction.
  */
 public class Array<T extends Comparable<T>>
-             implements Comparable<Array<T>>,
-                        Iterable<T>,
-                        Cloneable {
+implements Comparable<Array<T>>,
+Iterable<T>,
+Cloneable {
     /**
      * The underlying array of type T.
      */
     // TODO - you fill in here.
     private T[] mArray;
-
+    
     /**
      * The current size of the array.
      */
     // TODO - you fill in here.
     private int mSizeOfArray;
-
+    
     /**
      * Default value for elements in the array.
      */
@@ -43,12 +43,13 @@ public class Array<T extends Comparable<T>>
             throw new NegativeArraySizeException();
         } else {
             mSizeOfArray = size;
-	    // @@ I would just use Object here. 
-            mArray = (T[]) new Comparable[mSizeOfArray];
+            +	    // @@ I would just use Object here.
+            mArray = (T[]) new Object[mSizeOfArray];
+            
         }
-
+        
     }
-
+    
     /**
      * Constructs an array of the given size, filled with the provided
      * default value.
@@ -65,7 +66,7 @@ public class Array<T extends Comparable<T>>
         Arrays.fill(mArray, defaultValue);
         mDefaultValue= defaultValue;
     }
-
+    
     /**
      * Copy constructor; creates a deep copy of the provided array.
      * @param s The array to be copied.
@@ -73,12 +74,12 @@ public class Array<T extends Comparable<T>>
     @SuppressWarnings("unchecked")
     public Array(Array<T> s) {
         // TODO - you fill in here.
-
+        
         mSizeOfArray=s.mSizeOfArray;
         mDefaultValue=s.mDefaultValue;
         mArray = Arrays.copyOf(s.mArray, s.mSizeOfArray);
     }
-
+    
     /**
      * Creates a deep copy of this Array.  Implements the
      * Prototype pattern.
@@ -87,11 +88,10 @@ public class Array<T extends Comparable<T>>
     public Object clone() {
         // TODO - you fill in here (replace null with proper return
         // value).
-	// @@ Please just say 'return …'
-        Array<T> cloneArray= new Array<T>(this);
-        return cloneArray;
+        +	// @@ Please just say 'return …'
+        return new Array<T>(this);
     }
-
+    
     /**
      * @return The current size of the array.
      */
@@ -100,7 +100,7 @@ public class Array<T extends Comparable<T>>
         // value).
         return mSizeOfArray;
     }
-
+    
     /**
      * @return The current maximum capacity of the array withough
      */
@@ -109,7 +109,7 @@ public class Array<T extends Comparable<T>>
         // value).
         return mArray.length;
     }
-
+    
     /**
      * Resizes the array to the requested size.
      *
@@ -125,18 +125,18 @@ public class Array<T extends Comparable<T>>
      */
     public void resize(int size) {
         // TODO - you fill in here.
-
+        
         if (size>mSizeOfArray){
             if (size > capacity()){
                 mArray = Arrays.copyOf(mArray, size);
             }
-             Arrays.fill(mArray, mSizeOfArray, size, mDefaultValue);
+            Arrays.fill(mArray, mSizeOfArray, size, mDefaultValue);
         }
         mSizeOfArray=size;
-
-
+        
+        
     }
-
+    
     /**
      * @return the element at the requested index.
      * @param index Nonnegative index of the requested element.
@@ -149,7 +149,7 @@ public class Array<T extends Comparable<T>>
         rangeCheck(index);
         return mArray[index];
     }
-
+    
     /**
      * Sets the element at the requested index with a provided value.
      * @param index Nonnegative index of the requested element.
@@ -162,7 +162,7 @@ public class Array<T extends Comparable<T>>
         rangeCheck(index);
         mArray[index]= value;
     }
-
+    
     /**
      * Removes the element at the specified position in this Array.
      * Shifts any subsequent elements to the left (subtracts one from their
@@ -180,7 +180,7 @@ public class Array<T extends Comparable<T>>
         mSizeOfArray--;
         return temp;
     }
-
+    
     /**
      * Compares this array with another array.
      * <p>
@@ -195,18 +195,19 @@ public class Array<T extends Comparable<T>>
         // TODO - you fill in here (replace 0 with proper return
         // value).
         for (int i = 0; i < Math.min(s.mSizeOfArray, mSizeOfArray); i++) {
-	    // @@ Careful, this doens't work like you expect it to.  "!=" is
-	    // @@ comparing *identity* not *contents*
-            if (s.mArray[i] != mArray[i]) {
+            +	    // @@ Careful, this doens't work like you expect it to.  "!=" is
+            +	    // @@ comparing *identity* not *contents*
+            if (!s.mArray[i].equals(mArray[i])) {
+                
                 return mArray[i].compareTo(s.mArray[i]);
-
+                
             }
         }
         return mSizeOfArray - s.mSizeOfArray;
     }
-
-    /** 
-     * Throws an exception if the index is out of bound. 
+    
+    /**
+     * Throws an exception if the index is out of bound.
      */
     private void rangeCheck(int index) {
         // TODO - you fill in here.
@@ -214,16 +215,16 @@ public class Array<T extends Comparable<T>>
             throw new ArrayIndexOutOfBoundsException("Index out of bounds.");
         }
     }
-
-    public class ArrayIterator 
-           implements java.util.Iterator<T> {
+    
+    public class ArrayIterator
+    implements java.util.Iterator<T> {
         // Current position in the Array (defaults to 0).
         // TODO - you fill in here.
         private int mCurrentIndex = 0;
         // Index of last element returned; -1 if no such element.
         // TODO - you fill in here.
         private int mLastElementReturned = -1;
-
+        
         /**
          * @return True if the iteration has more elements that
          * haven't been iterated through yet, else false.
@@ -234,19 +235,19 @@ public class Array<T extends Comparable<T>>
             // expression).
             return mCurrentIndex < mSizeOfArray;
         }
-
+        
         /**
          * @return The next element in the iteration.
          */
         @Override
         public T next() {
             // TODO - you fill in here (replace null with proper return value).
-
+            
             mLastElementReturned=mCurrentIndex;
             return get(mCurrentIndex++);
-
+            
         }
-
+        
         /**
          * Removes from the underlying collection the last element
          * returned by this iterator. This method can be called only
@@ -258,7 +259,7 @@ public class Array<T extends Comparable<T>>
         @Override
         public void remove() {
             // TODO - you fill in here
-
+            
             if (mLastElementReturned != -1) {
                 Array.this.remove(mLastElementReturned); //returns the item removed
                 mCurrentIndex--;
@@ -266,17 +267,17 @@ public class Array<T extends Comparable<T>>
             } else {
                 throw new IllegalStateException();
             }
-
+            
         }
-
+        
     }
-
-        /**
-         * Factory method that returns an Iterator.
-         */
-        public Iterator<T> iterator() {
-            //TODO - you fill in here (replace null with proper return value).
-            return new ArrayIterator();
-        }
+    
+    /**
+     * Factory method that returns an Iterator.
+     */
+    public Iterator<T> iterator() {
+        //TODO - you fill in here (replace null with proper return value).
+        return new ArrayIterator();
     }
+}
 
