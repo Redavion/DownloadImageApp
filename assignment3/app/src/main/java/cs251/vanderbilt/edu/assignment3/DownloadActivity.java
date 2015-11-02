@@ -20,9 +20,11 @@ public class DownloadActivity extends Activity {
         new Download().execute(myData);
     }
 
-    private class Download extends AsyncTask<Uri,Void,Uri>{
+    private class Download extends AsyncTask<Uri, Void, Uri> {
+        // @@ Prefix this member variable with "m"
         long totalTime;
 
+        // @@ Insert a brief comment explaining what this method does
         @Override
         protected Uri doInBackground(Uri[] params) {
 
@@ -32,28 +34,32 @@ public class DownloadActivity extends Activity {
 
             long endTime = System.currentTimeMillis();
 
-            totalTime= endTime-beginTime;
+            totalTime = endTime - beginTime;
 
             return absolutePath;
         }
 
+        // @@ https://google.github.io/styleguide/javaguide.html#s4.6.1-vertical-whitespace
 
-
+        // @@ Insert a brief comment explaining what this method does
         @Override
         protected void onPostExecute(Uri o) {
 
             Log.w("DLActivity", o.toString());
 
-            Intent intent = new Intent("",o);
+            Intent intent = new Intent("", o);
+            // @@ Use a named constant here instead of "timeDownload"
             intent.putExtra("timeDownload",  String.valueOf(totalTime));
-            if (o !=null) {
+
+            // @@ Simplify this so that setResult is only called once
+            if (o != null) {
                 setResult(RESULT_OK, intent);
             } else {
                 setResult(RESULT_CANCELED, intent);
             }
             finish();
 
-
+            // @@ https://google.github.io/styleguide/javaguide.html#s4.6.1-vertical-whitespace
 
 
         }
