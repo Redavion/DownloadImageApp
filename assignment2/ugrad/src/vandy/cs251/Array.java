@@ -43,8 +43,8 @@ Cloneable {
             throw new NegativeArraySizeException();
         } else {
             mSizeOfArray = size;
-            +	    // @@ I would just use Object here.
-            mArray = (T[]) new Object[mSizeOfArray];
+            // @@ I would just use Object here.
+            mArray = (T[]) new Comparable[mSizeOfArray];
             
         }
         
@@ -88,7 +88,7 @@ Cloneable {
     public Object clone() {
         // TODO - you fill in here (replace null with proper return
         // value).
-        +	// @@ Please just say 'return …'
+        // @@ Please just say 'return â€¦'
         return new Array<T>(this);
     }
     
@@ -195,8 +195,8 @@ Cloneable {
         // TODO - you fill in here (replace 0 with proper return
         // value).
         for (int i = 0; i < Math.min(s.mSizeOfArray, mSizeOfArray); i++) {
-            +	    // @@ Careful, this doens't work like you expect it to.  "!=" is
-            +	    // @@ comparing *identity* not *contents*
+            // @@ Careful, this doens't work like you expect it to.  "!=" is
+            // @@ comparing *identity* not *contents*
             if (!s.mArray[i].equals(mArray[i])) {
                 
                 return mArray[i].compareTo(s.mArray[i]);
@@ -280,4 +280,3 @@ Cloneable {
         return new ArrayIterator();
     }
 }
-
