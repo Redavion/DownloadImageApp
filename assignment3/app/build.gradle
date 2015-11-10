@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "cs251.vanderbilt.edu.assignment3"
+        applicationId "edu.vanderbilt.cs251.assignment3new"
         minSdkVersion 23
         targetSdkVersion 23
         versionCode 1
