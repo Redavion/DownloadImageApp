@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cs251.vanderbilt.edu.assignment3" >
+    package="edu.vanderbilt.cs251.assignment3new" >
 
         <uses-permission android:name="android.permission.INTERNET"/>
         <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -22,7 +22,8 @@
             </intent-filter>
         <activity
         android:name=".DownloadActivity"
-        android:label="@string/title_activity_download_image"> </activity>
+        android:label="@string/title_activity_download_image">
+        </activity>
     </application>
 
 </manifest>
