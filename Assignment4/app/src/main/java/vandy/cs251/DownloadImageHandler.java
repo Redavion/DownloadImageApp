@@ -18,9 +18,9 @@ import android.util.Log;
 
 
 public class DownloadImageHandler extends Handler {
-
+    //key for string fileName stored in bundle in return message's data field
     public static final String FILE_NAME= "FileName";
-
+    //context to pass into constructor
     private Context mContext;
     /*
     Constructor for DIH
