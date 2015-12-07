@@ -11,13 +11,10 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-/**
- * Created by alisonchen on 11/15/15.
- */
-
-
-
 public class DownloadImageHandler extends Handler {
+    // @@ Same thing here: use vertical whitespace for readability:
+    // @@ https://google.github.io/styleguide/javaguide.html#s4.6.1-vertical-whitespace
+
     //key for string fileName stored in bundle in return message's data field
     public static final String FILE_NAME= "FileName";
     //context to pass into constructor
@@ -29,6 +26,7 @@ public class DownloadImageHandler extends Handler {
         super(looper);
         mContext = context;
     }
+
     /*
     Method that takes a message with a url in it and returns another message back to main thread
     containing time to download, file name, and absolute path
@@ -44,10 +42,15 @@ public class DownloadImageHandler extends Handler {
 
         long endTime = System.currentTimeMillis();
         mTotalTime = endTime - beginTime;
+        // @@ Use horizontal whitespace on the line below
+        // @@ https://google.github.io/styleguide/javaguide.html#s4.6.2-horizontal-whitespace
         Message replyMsg= Message.obtain();
         replyMsg.obj = absolutePath;
 
+        // @@ You need to handle the case where downloadImage returns null; if you don't,
+        // @@ then the line below could throw an exception if obj is null
         String fileName= msg.obj.toString();
+        // @@ Simplify this; something like the getName method of the File class or
         fileName = fileName.substring(fileName.lastIndexOf("/")+1, fileName.length());
 
         Bundle b = new Bundle();

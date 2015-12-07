@@ -11,12 +11,10 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.widget.EditText;
 
-/**
- * Created by alisonchen on 11/15/15.
- */
-
-
 public class ImageIntentService extends IntentService {
+    // @@ Use vertical whitespace to increase readability:
+    // @@ https://google.github.io/styleguide/javaguide.html#s4.6.1-vertical-whitespace
+
     //key for messenger replyMessenger placed in intent to start service
     public static final String MESSENGER_OBJECT= "messenger";
     //key for string fileName stored in bundle in return message's data field
@@ -48,9 +46,13 @@ public class ImageIntentService extends IntentService {
         long endTime = System.currentTimeMillis();
         mTotalTime = endTime - beginTime;
 
+        // @@ Move this to a separate method to reduce the length of onHandleIntent
         Message returnFilePath = Message.obtain();
+        // @@ Why not use the setData method instead of the obj field?
         returnFilePath.obj = absolutePath; //store absolute path of downloaded file in object
 
+        // @@ You need to handle the case where downloadImage returns null; if you don't,
+        // @@ then getFileName could throw an exception
         String filename = getFileName(data);
 
         Bundle b = new Bundle();
@@ -64,7 +66,6 @@ public class ImageIntentService extends IntentService {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -72,6 +73,7 @@ public class ImageIntentService extends IntentService {
      */
     protected String getFileName(Intent data){
         String filePath= data.getDataString();
+        // @@ Simplify this. For instance, use the getName method of the File class
         return filePath.substring(filePath.lastIndexOf("/")+1, filePath.length());
     }
 
