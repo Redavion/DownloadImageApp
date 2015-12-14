@@ -2,7 +2,11 @@ package edu.vanderbilt.cs251.assignment3new;
 
 
 import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,92 +20,106 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
+import android.os.Looper;
 
 import java.io.File;
 
 public class MainActivity extends Activity {
 
-    private static final int DOWNLOAD_IMAGE= 1;
-    // @@ Prefix these member variables with "m"
-    public static EditText meditText;
-    private TableLayout mtableL;
-    private static final String IMAGE_DOWNLOAD_TIME= "timeDownload";
+    public static EditText mEditText;
 
-    // @@ Insert a brief comment explaining what this method does
+    private TableLayout mtableL;
+
+    private CustomHandler mReplyHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
+        //create a thread with looper and let instance of DownloadImageHandler handle its messages
+        HandlerThread imageThread = new HandlerThread("Image");
+        imageThread.start();
+        //looper dispatches message to DownloadImageHandler
+        final DownloadImageHandler dih = new DownloadImageHandler(imageThread.getLooper(), getApplicationContext());
 
-        meditText = (EditText) findViewById(R.id.editText);
-
-        // @@ Move this permission check to right before you call downloadImage
-
-        Button button = (Button) findViewById(R.id.button);
-
-
+        mEditText = (EditText) findViewById(R.id.editText);
+        Button buttonService = (Button) findViewById(R.id.button);
+        Button buttonThread = (Button) findViewById(R.id.button2);
         mtableL = (TableLayout) findViewById(R.id.table);
 
+        mReplyHandler = (CustomHandler) new Handler(Looper.getMainLooper());
 
-        button.setOnClickListener(new View.OnClickListener() {
+        //event that happens when you click Download Service
 
-            public void onClick(View v)
-            {
-                // @@ Consider making this a Factory method in DownloadActivity
-                Intent downloadIntent = new Intent(MainActivity.this, DownloadActivity.class);
-                // @@ Consider moving to functionality that grabs the text from editText to a separate method
-                downloadIntent.setData(Uri.parse(meditText.getText().toString().trim()));
+        buttonService.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                Intent serviceIntent = ImageIntentService.makeIntent(getURI(), mReplyHandler);
 
                 int permissionCheck = MainActivity.this.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-                // @@ Always use braces around if statements
-                // @@ https://google.github.io/styleguide/javaguide.html#s4.1.1-braces-always-used
                 if (permissionCheck == PackageManager.PERMISSION_DENIED) {
                     MainActivity.this.requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 }
-                startActivityForResult(downloadIntent, DOWNLOAD_IMAGE);
+
+                startService(serviceIntent);
+            }
+        });
+
+        buttonThread.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                int permissionCheck = MainActivity.this.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+                    MainActivity.this.requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                }
+
+                Messenger bgMessenger = new Messenger(dih);
+                Message msgToBackground = Message.obtain();
+                msgToBackground.obj = getURI();
+                msgToBackground.replyTo = new Messenger(mReplyHandler);
+                //send the message to the background messenger
+                try {
+                    bgMessenger.send(msgToBackground);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
-    // @@ https://google.github.io/styleguide/javaguide.html#s4.6.1-vertical-whitespace
 
-    // @@ Insert a brief comment explaining what this method does
-    /**
-     * This method checks the result it receives from DownloadActivity and if it is valid
-     * it will call createOneFullRow.
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == DOWNLOAD_IMAGE && resultCode == Activity.RESULT_OK){
-            createOneFullRow(data);
-        } else if(resultCode == Activity.RESULT_CANCELED){
-            Toast.makeText(this, "Not working.", Toast.LENGTH_SHORT).show();
+    public class CustomHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            //msg contains the path to the downloaded file
+            createOneFullRow(msg);
         }
     }
 
-    // @@ Insert a brief comment explaining what this method does
+    private Uri getURI() {
+        return Uri.parse(mEditText.getText().toString().trim());
+    }
+
     /**
      * This method will create a row that displays the image download information and open the picture
      */
-    protected void createOneFullRow(Intent data) {
+    protected void createOneFullRow(Message data) {
         LayoutInflater i = getLayoutInflater();
-        final Uri path = data.getData();
+        final String path = (String) data.obj; //string of downloadpath
         TableRow tableRow = (TableRow) i.inflate(R.layout.table_row, null, false);
 
         mtableL.addView(tableRow);
 
         TextView timeView = (TextView) tableRow.findViewById(R.id.dl_time);
-        // @@ Use a named constant instead of "timeDownload"
-        // @@ For example: public static final String "IMAGE_DOWNLOAD_TIME"
-        String time = data.getStringExtra(IMAGE_DOWNLOAD_TIME);
+
+        final String time = Integer.toString(data.arg1); //download time
         timeView.setText(time);
         TextView imageName = (TextView) tableRow.findViewById(R.id.image_name);
 
-        // @@ Consider moving this to a separate method; too much String processing in one line
-        String filename = getFileName(data);
+
+        final Bundle storeFileName = data.getData();
+        String filename = storeFileName.toString();
         imageName.setText(filename);
 
         Button openGallery = (Button) findViewById(R.id.button2);
@@ -120,13 +138,5 @@ public class MainActivity extends Activity {
 
             }
         });
-    }
-
-    /**
-     * This method will return the file name
-     */
-    protected String getFileName(Intent data){
-        String filePath= data.toString();
-        return filePath.substring(data.toString().lastIndexOf("/")+1, data.toString().length()-1);
     }
 }

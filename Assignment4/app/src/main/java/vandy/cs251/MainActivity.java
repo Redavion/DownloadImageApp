@@ -89,7 +89,7 @@ public class MainActivity extends Activity {
     /*
     Method that retrieves the URI from user input mEditText field
     */
-    private Uri getURI() {
+    private Uri getUri() {
         String text = mEditText.getText().toString();
         if (text.isEmpty()) {
             text = "http://balasub.com/attheshire.jpg";
@@ -134,7 +134,7 @@ public class MainActivity extends Activity {
     This method will create an intent to start a service and perform permission checks
     */
     protected void clickService() {
-        Intent serviceIntent = ImageIntentService.makeIntent(getURI(), mReplyHandler, getApplicationContext());
+        Intent serviceIntent = ImageIntentService.makeIntent(getUri(), mReplyHandler, getApplicationContext());
 
         int permissionCheck = MainActivity.this.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck == PackageManager.PERMISSION_DENIED) {
@@ -154,7 +154,7 @@ public class MainActivity extends Activity {
         }
 
         Message msgToBackground = Message.obtain();
-        msgToBackground.obj = getURI();
+        msgToBackground.obj = getUri();
         msgToBackground.replyTo = new Messenger(mReplyHandler);
         //send the message to the background messenger
         try {
@@ -168,7 +168,6 @@ public class MainActivity extends Activity {
     This method will take the path to the image and open the image in the gallery
     */
     protected void clickGallery(Uri imagePath){
-        Log.w("main", imagePath.toString());
 
         Intent intent = new Intent();
         // @@ Should be able to use Intent.ACTION_VIEW instead of Intent.ACTION_GET_CONTENT

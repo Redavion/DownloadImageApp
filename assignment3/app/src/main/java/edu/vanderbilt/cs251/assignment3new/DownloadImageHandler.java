@@ -1,4 +1,4 @@
-package vandy.cs251;
+package edu.vanderbilt.cs251.assignment3new;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,39 +9,35 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.util.Log;
-
-import java.io.File;
 
 /**
  * Created by alisonchen on 11/15/15.
  */
 
-
+/*Clicking the “Download Thread” button will download the image using a
+        background thread that has an associated MessageQueue and Handler. You should
+        send your download request to the thread’s MessageQueue using a custom Handler
+        object; you will also use this custom Handler to process the request. Communication
+        from the background thread back to the UI thread should done using a Messenger
+        (which is a wrapper around a Handler) that posts a Message to the MessageQueue of
+        the main UI thread. This Messenger can be passed using the “replyTo” field of the
+        request Message.
+        */
 
 public class DownloadImageHandler extends Handler {
 
-
-    //key for string fileName stored in bundle in return message's data field
     public static final String FILE_NAME= "FileName";
-    //context to pass into constructor
+
     private Context mContext;
-    /*
-    Constructor for DIH
-    */
+
     public DownloadImageHandler(Looper looper, Context context ){
         super(looper);
         mContext = context;
     }
 
-    /*
-    Method that takes a message with a url in it and returns another message back to main thread
-    containing time to download, file name, and absolute path
-    */
     @Override
     public void handleMessage(Message msg) {
 
-        Log.w("main", "Inside DIH handleMessage");
         long mTotalTime;
         long beginTime = System.currentTimeMillis();
 
@@ -49,14 +45,11 @@ public class DownloadImageHandler extends Handler {
 
         long endTime = System.currentTimeMillis();
         mTotalTime = endTime - beginTime;
-        Message replyMsg = Message.obtain();
+        Message replyMsg= Message.obtain();
         replyMsg.obj = absolutePath;
-        String fileName= "null";
 
-        if (msg.obj != null) {
-            fileName = msg.obj.toString();
-            fileName = getFileName(fileName);
-        }
+        String fileName= (String) msg.obj;
+        fileName = fileName.substring(fileName.lastIndexOf("/")+1, fileName.length()-1);
 
         Bundle b = new Bundle();
         b.putString(FILE_NAME, fileName);
@@ -70,13 +63,5 @@ public class DownloadImageHandler extends Handler {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
-
-
-    protected String getFileName(String fileName){
-
-        File f = new File(fileName);
-        return f.getName();
-
     }
 }

@@ -1,4 +1,4 @@
-package vandy.cs251;
+package edu.vanderbilt.cs251.assignment3new;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -10,58 +10,53 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.widget.EditText;
-import java.io.File;
+
 /**
  * Created by alisonchen on 11/15/15.
  */
 
 
+//Clicking the “Download Service” button will download the image using a Service.
+//        Graduate students must implement a bound service; undergraduates can implement
+//        either a started service (e.g., with the IntentService class) or a bound service.
 public class ImageIntentService extends IntentService {
 
-
-
-    //key for messenger replyMessenger placed in intent to start service
     public static final String MESSENGER_OBJECT= "messenger";
-    //key for string fileName stored in bundle in return message's data field
     public static final String FILE_NAME= "FileName";
+
     public ImageIntentService() {
         super("ImageIntentService");
     }
 
-    /*
-    Factory method that stores address and messenger into an newly created intent
-    */
-    public static Intent makeIntent(Uri address, Handler mReplyHandler, Context context) {
-        Intent serviceIntent = new Intent(context, ImageIntentService.class);
+    public static Intent makeIntent(Uri address, Handler mReplyHandler) {
+        Intent serviceIntent = new Intent();
         serviceIntent.setData(address);
         Messenger replyMessenger = new Messenger(mReplyHandler);
         serviceIntent.putExtra(MESSENGER_OBJECT, replyMessenger);
         return serviceIntent;
     }
-    /*
-    Takes intent and downloads the url into a local server. Then returns time to download, file name,
-    and absolute path in a message.
-    */
+
     public void onHandleIntent (Intent data) {
         //create a messenger that can get the messenger object from your intent
         Messenger replyMessenger = data.getParcelableExtra(MESSENGER_OBJECT);
         long mTotalTime;
         long beginTime = System.currentTimeMillis();
-        Uri absolutePath = DownloadUtils.downloadImage(getApplicationContext(), data.getData());
+        Uri absolutePath = DownloadUtils.downloadImage(ImageIntentService.this, data.getData());
         long endTime = System.currentTimeMillis();
         mTotalTime = endTime - beginTime;
 
-
+        //Message needs path to downloaded file, name, download time
         Message returnFilePath = Message.obtain();
         returnFilePath.obj = absolutePath; //store absolute path of downloaded file in object
 
-         String filename = getFileName(data);
+        String filename = getFileName(data);
 
         Bundle b = new Bundle();
-        b.putCharSequence(FILE_NAME, filename);
+        b.putString(FILE_NAME, filename);
         returnFilePath.setData(b); //store filename into data field of message
 
         returnFilePath.arg1 = (int) mTotalTime; //store download time in arg1
+
 
         try {
             replyMessenger.send(returnFilePath);
@@ -74,16 +69,9 @@ public class ImageIntentService extends IntentService {
     /**
      * This method will return the file name
      */
-    protected String getFileName(Intent data) {
-        if (data.getDataString() != null) {
-
-            String filePath = data.getDataString();
-            File f = new File(filePath);
-            return f.getName();
-
-        } else {
-            return "null";
-        }
+    protected String getFileName(Intent data){
+        String filePath= data.toString();
+        return filePath.substring(data.toString().lastIndexOf("/")+1, data.toString().length()-1);
     }
 
 }
