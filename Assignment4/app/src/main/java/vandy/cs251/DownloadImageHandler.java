@@ -11,6 +11,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+<<<<<<< HEAD
 import java.io.File;
 
 /**
@@ -21,6 +22,11 @@ import java.io.File;
 
 public class DownloadImageHandler extends Handler {
 
+=======
+public class DownloadImageHandler extends Handler {
+    // @@ Same thing here: use vertical whitespace for readability:
+    // @@ https://google.github.io/styleguide/javaguide.html#s4.6.1-vertical-whitespace
+>>>>>>> e5314424c0a53994c311981985595fd1a9cfc93d
 
     //key for string fileName stored in bundle in return message's data field
     public static final String FILE_NAME= "FileName";
@@ -49,14 +55,28 @@ public class DownloadImageHandler extends Handler {
 
         long endTime = System.currentTimeMillis();
         mTotalTime = endTime - beginTime;
+<<<<<<< HEAD
         Message replyMsg = Message.obtain();
+=======
+        // @@ Use horizontal whitespace on the line below
+        // @@ https://google.github.io/styleguide/javaguide.html#s4.6.2-horizontal-whitespace
+        Message replyMsg= Message.obtain();
+>>>>>>> e5314424c0a53994c311981985595fd1a9cfc93d
         replyMsg.obj = absolutePath;
         String fileName= "null";
 
+<<<<<<< HEAD
         if (msg.obj != null) {
             fileName = msg.obj.toString();
             fileName = getFileName(fileName);
         }
+=======
+        // @@ You need to handle the case where downloadImage returns null; if you don't,
+        // @@ then the line below could throw an exception if obj is null
+        String fileName= msg.obj.toString();
+        // @@ Simplify this; something like the getName method of the File class or
+        fileName = fileName.substring(fileName.lastIndexOf("/")+1, fileName.length());
+>>>>>>> e5314424c0a53994c311981985595fd1a9cfc93d
 
         Bundle b = new Bundle();
         b.putString(FILE_NAME, fileName);

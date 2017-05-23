@@ -1,6 +1,5 @@
 package vandy.cs251;
 
-
 import android.app.Activity;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -28,37 +27,40 @@ public class MainActivity extends Activity {
 
     //text field for user to input url
     public static EditText mEditText;
+
     //TableLayout
     private TableLayout mtableL;
+
     //Handler for main thread
     private CustomHandler mReplyHandler;
+
+    // @@ Prefixing member variables with "m" is a good practice
     //Messenger for messages sent to background thread
     private Messenger bgMessenger;
+
     //instance of DownloadImageHandler
-    private DownloadImageHandler dih;
+    private DownloadImageHandler dih; // @@ Consider a longer name for a member variable
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-
-        //create a thread with looper and let instance of DownloadImageHandler handle its messages
-        HandlerThread imageThread = new HandlerThread("Image");
-        imageThread.start();
-        //looper dispatches message to DownloadImageHandler
-        dih = new DownloadImageHandler(imageThread.getLooper(), getApplicationContext());
-        bgMessenger = new Messenger(dih);
 
         mEditText = (EditText) findViewById(R.id.editText);
         Button buttonService = (Button) findViewById(R.id.button);
         Button buttonThread = (Button) findViewById(R.id.button2);
         mtableL = (TableLayout) findViewById(R.id.table);
 
+        //create a thread with looper and let instance of DownloadImageHandler handle its messages
+        HandlerThread imageThread = new HandlerThread("Image");
+        imageThread.start();
+
+        //looper dispatches message to DownloadImageHandler
+        dih = new DownloadImageHandler(imageThread.getLooper(), getApplicationContext());
+        bgMessenger = new Messenger(dih);
         mReplyHandler = new CustomHandler();
 
         //event that happens when you click Download Service
-
         buttonService.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
@@ -67,15 +69,14 @@ public class MainActivity extends Activity {
         });
 
         //event that happens when you click Download Thread
-
         buttonThread.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 clickThread();
             }
         });
     }
 
+    // @@ https://google.github.io/styleguide/javaguide.html#s4.8.6-comments
     /*
     When main thread receives a message, it will pass it to the method createOneFullRow
     */
@@ -86,6 +87,9 @@ public class MainActivity extends Activity {
             createOneFullRow(msg);
         }
     }
+
+    // @@ Probably should name this getUri instead of getURI; for an explanation, see:
+    // @@ https://google.github.io/styleguide/javaguide.html#s5.3-camel-case
     /*
     Method that retrieves the URI from user input mEditText field
     */
@@ -103,31 +107,30 @@ public class MainActivity extends Activity {
      */
     protected void createOneFullRow(Message data) {
         LayoutInflater i = getLayoutInflater();
-        final String path =  data.obj.toString(); //string of downloadpath
-        TableRow tableRow = (TableRow) i.inflate(R.layout.table_row, null, false);
 
+        TableRow tableRow = (TableRow) i.inflate(R.layout.table_row, null, false);
         mtableL.addView(tableRow);
 
-        TextView timeView = (TextView) tableRow.findViewById(R.id.dl_time);
-
         final String time = Integer.toString(data.arg1); //download time
-        timeView.setText(time);
-        TextView imageName = (TextView) tableRow.findViewById(R.id.image_name);
 
+        TextView timeView = (TextView) tableRow.findViewById(R.id.dl_time);
+        timeView.setText(time);
 
         final Bundle storeFileName = data.getData();
         String filename = (String) storeFileName.getCharSequence(ImageIntentService.FILE_NAME);
+
+        TextView imageName = (TextView) tableRow.findViewById(R.id.image_name);
         imageName.setText(filename);
 
-        Button openGallery = (Button) tableRow.findViewById(R.id.galleryButton);
+        final String path =  data.obj.toString(); //string of downloadpath
         final Uri imagePath = Uri.parse("file://" + path);
 
+        Button openGallery = (Button) tableRow.findViewById(R.id.galleryButton);
         openGallery.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 clickGallery(imagePath);
             }
         });
-
     }
 
     /*
@@ -164,18 +167,22 @@ public class MainActivity extends Activity {
         }
 
     }
+
     /*
     This method will take the path to the image and open the image in the gallery
     */
     protected void clickGallery(Uri imagePath){
+<<<<<<< HEAD
+=======
+        // @@ A better tag than "main" will make debugging easier
+        Log.w("main", imagePath.toString());
+>>>>>>> e5314424c0a53994c311981985595fd1a9cfc93d
 
         Intent intent = new Intent();
-        // @@ Should be able to use Intent.ACTION_VIEW instead of Intent.ACTION_GET_CONTENT
         intent.setAction(Intent.ACTION_VIEW);
         intent.setDataAndType(imagePath, "image/*");
         startActivity(intent);
     }
-
 }
 
 
